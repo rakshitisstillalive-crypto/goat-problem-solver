@@ -444,10 +444,11 @@ export function Analyzer() {
         />
 
         <div className="mt-4 flex flex-wrap items-center gap-3">
-          <Button size="lg" onClick={run} disabled={!imageDataUrl || loading}>
-            {loading ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
-            {loading ? "Analysing sample…" : "Run AI analysis"}
+          <Button size="lg" onClick={run} disabled={!imageDataUrl || loading || preparing}>
+            {loading || preparing ? <Loader2 className="mr-2 size-4 animate-spin" /> : null}
+            {preparing ? "Preparing image…" : loading ? "Analysing sample…" : "Run AI analysis"}
           </Button>
+
           <p className="text-sm text-muted-foreground">
             Guest analysis is free.{" "}
             <Link to="/auth" search={{ redirect: "/analyze" }} className="text-primary underline-offset-4 hover:underline">
