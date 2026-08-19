@@ -314,6 +314,7 @@ async function downscaleDataUrl(dataUrl: string): Promise<string> {
 export function Analyzer() {
 
   const [imageDataUrl, setImageDataUrl] = useState<string | null>(null);
+  const [preparing, setPreparing] = useState(false);
   const [note, setNote] = useState("");
   const [loading, setLoading] = useState(false);
   const [report, setReport] = useState<AnalysisReport | null>(null);
@@ -329,7 +330,12 @@ export function Analyzer() {
       toast.error("Image must be under 4MB.");
       return;
     }
+    setPreparing(true);
     const reader = new FileReader();
+    reader.onerror = () => {
+      setPreparing(false);
+      toast.error("Could not read that image file.");
+    };
     reader.onload = async () => {
       const original = String(reader.result);
       let optimised = original;
@@ -339,11 +345,13 @@ export function Analyzer() {
         // keep the original if the browser cannot re-encode it
       }
       setImageDataUrl(optimised);
+      setPreparing(false);
       setReport(null);
       setLastError(null);
     };
     reader.readAsDataURL(file);
   }, []);
+
 
 
   const run = async () => {
