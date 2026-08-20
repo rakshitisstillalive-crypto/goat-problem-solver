@@ -11,14 +11,27 @@ export async function analyzeImageViaApi(input: {
     body: JSON.stringify(input),
   });
 
-  const payload = (await response.json().catch(() => null)) as
-    | (AnalysisReport & { error?: string })
-    | { error?: string }
-    | null;
+  const text = await response.text();
+  let payload: (Partial<AnalysisReport> & { error?: string }) | null = null;
+  try {
+    payload = JSON.parse(text) as Partial<AnalysisReport> & { error?: string };
+  } catch {
+    payload = null;
+  }
 
   if (!response.ok) {
-    throw new Error(payload?.error || "The analysis engine could not process this image.");
+    // Surface the real reason instead of a generic message: gateway/proxy
+    // failures (timeouts, payload limits) return HTML rather than JSON.
+    const detail =
+      payload?.error ||
+      (text.trim().startsWith("<") ? "" : text.trim().slice(0, 200)) ||
+      response.statusText;
+    throw new Error(
+      `Analysis failed (HTTP ${response.status}${detail ? `: ${detail}` : ""}). Please try again with a smaller photo.`,
+    );
   }
-  if (!payload) throw new Error("The analysis engine returned an unreadable report.");
+  if (!payload || !payload.kind) {
+    throw new Error("The analysis engine returned an unreadable report. Please retry.");
+  }
   return payload as AnalysisReport;
 }
