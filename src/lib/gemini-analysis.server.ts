@@ -5,9 +5,9 @@ import { SYSTEM_PROMPT } from "@/lib/analysis-prompt";
  * Gemini vision models, tried in order. Override with the GEMINI_MODEL env var.
  * If one is unavailable for the key, the next is tried automatically.
  */
-const GEMINI_MODELS = ["gemini-3.5-flash-lite", "gemini-3.6-flash"];
+const GEMINI_MODELS = ["gemini-2.5-flash", "gemini-2.0-flash"];
 
-const GATEWAY_MODELS = ["google/gemini-3.5-flash-lite", "google/gemini-3.6-flash"];
+const GATEWAY_MODELS = ["google/gemini-3.7-flash", "google/gemini-3.6-flash"];
 const GATEWAY_URL = "https://ai.gateway.lovable.dev/v1/chat/completions";
 
 export type AnalyzeRequest = { imageDataUrl: string; note?: string | undefined };
